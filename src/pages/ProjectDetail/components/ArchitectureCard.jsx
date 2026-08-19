@@ -8,12 +8,14 @@ export default function ArchitectureCard({ icon: Icon, title, value, color }) {
     };
 
     return (
-        <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-3">
-            <Icon size={17} className={colors[color] ?? 'text-slate-400'} />
+        <div className="min-w-0 rounded-xl border border-slate-800 bg-slate-950/50 p-3 transition-colors hover:border-slate-700">
+            <Icon size={16} className={colors[color] || 'text-blue-400'} />
 
-            <p className="mt-2 text-xs text-slate-500">{title}</p>
+            <p className="mt-2 text-[11px] text-slate-500 sm:text-xs">{title}</p>
 
-            <p className="mt-1 text-sm font-medium break-words text-slate-200">{value}</p>
+            <p className="mt-1 text-xs font-medium break-words text-slate-200 sm:text-sm">
+                {value}
+            </p>
         </div>
     );
 }
