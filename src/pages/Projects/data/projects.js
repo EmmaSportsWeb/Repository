@@ -10,6 +10,12 @@ import {
     UserRound,
     Smartphone,
     Globe,
+    Palette,
+    Monitor,
+    GraduationCap,
+    BookOpen,
+    WalletCards,
+    Newspaper,
 } from 'lucide-react';
 
 const projects = [
@@ -104,6 +110,123 @@ const projects = [
 
         architectureDescription:
             'Frontend desarrollado con React y Tailwind CSS, conectado a una API REST desarrollada con Laravel y una base de datos MySQL.',
+    },
+    {
+        id: 2,
+        slug: 'sistema-aula-virtual',
+
+        title: 'Sistema de Aula Virtual',
+
+        shortTitle: 'Aula Virtual',
+
+        type: 'Frontend',
+
+        category: 'Web',
+
+        featured: true,
+
+        status: 'Proyecto en desarrollo',
+
+        description:
+            'Plataforma web administrativa para la gestión y visualización de información académica.',
+
+        fullDescription:
+            'Sistema web desarrollado como interfaz administrativa para la gestión escolar. La plataforma cuenta con un dashboard general, gestión de estudiantes, cursos y asignaturas, calendario de eventos, módulo financiero, noticias y diferentes secciones orientadas a la administración de un establecimiento educacional. El proyecto está enfocado en ofrecer una interfaz clara, organizada y responsive para facilitar la administración y visualización de información.',
+
+        technologies: [
+            'React',
+            'JavaScript',
+            'Tailwind CSS',
+            'Lucide React',
+            'Vite',
+            'Git',
+            'GitHub',
+        ],
+
+        architecture: [
+            {
+                icon: Code2,
+                title: 'Frontend',
+                value: 'React',
+                color: 'blue',
+            },
+            {
+                icon: Palette,
+                title: 'UI',
+                value: 'Tailwind CSS',
+                color: 'cyan',
+            },
+            {
+                icon: Monitor,
+                title: 'Build Tool',
+                value: 'Vite',
+                color: 'purple',
+            },
+        ],
+
+        features: [
+            {
+                icon: LayoutDashboard,
+                title: 'Dashboard administrativo',
+                description:
+                    'Panel principal con estadísticas, gráficos, resumen de información y accesos a diferentes módulos.',
+            },
+            {
+                icon: Users,
+                title: 'Gestión de estudiantes',
+                description:
+                    'Interfaz para visualizar y administrar información de los estudiantes del establecimiento.',
+            },
+            {
+                icon: GraduationCap,
+                title: 'Gestión académica',
+                description:
+                    'Secciones destinadas a la organización de cursos, estudiantes y diferentes elementos académicos.',
+            },
+            {
+                icon: BookOpen,
+                title: 'Asignaturas y cursos',
+                description:
+                    'Visualización y organización de cursos y asignaturas mediante interfaces administrativas.',
+            },
+            {
+                icon: CalendarDays,
+                title: 'Calendario de eventos',
+                description:
+                    'Calendario para visualizar y gestionar eventos relevantes del establecimiento.',
+            },
+            {
+                icon: WalletCards,
+                title: 'Módulo financiero',
+                description:
+                    'Interfaz de visualización de información financiera mediante gráficos y tablas.',
+            },
+            {
+                icon: Newspaper,
+                title: 'Noticias',
+                description:
+                    'Sección para crear y visualizar noticias o comunicados dentro de la plataforma.',
+            },
+            {
+                icon: Smartphone,
+                title: 'Diseño responsive',
+                description: 'Interfaz adaptable a diferentes tamaños de pantalla y dispositivos.',
+            },
+        ],
+
+        images: Array.from(
+            { length: 7 },
+            (_, index) => `/images/projects/aula-virtual/img${index + 1}.webp`
+        ),
+
+        mobileImages: [],
+
+        github: null,
+
+        demo: null,
+
+        architectureDescription:
+            'Frontend desarrollado con React y Tailwind CSS, utilizando componentes reutilizables y una interfaz administrativa orientada a la gestión de información escolar. La aplicación utiliza Vite como herramienta de desarrollo y Lucide React para la iconografía.',
     },
 ];
 
