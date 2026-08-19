@@ -23,6 +23,7 @@ export default function ProjectGallery({
         const handleKeyDown = (event) => {
             if (event.key === 'Escape') {
                 setIsLightboxOpen(false);
+                return;
             }
 
             if (images.length > 1) {
@@ -39,18 +40,20 @@ export default function ProjectGallery({
         document.addEventListener('keydown', handleKeyDown);
 
         // Bloqueamos solamente el scroll de la página
-        // que está detrás del modal.
+        // que queda detrás del modal.
         const previousOverflow = document.body.style.overflow;
+
         document.body.style.overflow = 'hidden';
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
+
             document.body.style.overflow = previousOverflow;
         };
     }, [isLightboxOpen, images.length, onPrevious, onNext]);
 
     // ==================================================
-    // TOUCH / SWIPE
+    // TOUCH START
     // ==================================================
     const handleTouchStart = (event) => {
         const touch = event.touches[0];
@@ -59,6 +62,9 @@ export default function ProjectGallery({
         touchStartY.current = touch.clientY;
     };
 
+    // ==================================================
+    // TOUCH END
+    // ==================================================
     const handleTouchEnd = (event) => {
         if (touchStartX.current === null || touchStartY.current === null) {
             return;
@@ -78,10 +84,10 @@ export default function ProjectGallery({
         // ==================================================
         // MOVIMIENTO VERTICAL
         // ==================================================
-        // NO HACEMOS NADA.
+        // No hacemos absolutamente nada.
         //
         // El navegador se encarga del scroll vertical
-        // del lightbox.
+        // del modal.
         //
         if (absY > absX) {
             return;
@@ -98,11 +104,13 @@ export default function ProjectGallery({
             return;
         }
 
+        // Swipe izquierda → siguiente
         if (deltaX < 0) {
-            // Swipe izquierda → siguiente
             onNext();
-        } else {
-            // Swipe derecha → anterior
+        }
+
+        // Swipe derecha → anterior
+        else {
             onPrevious();
         }
     };
@@ -113,7 +121,9 @@ export default function ProjectGallery({
                 GALLERY
             ================================================== */}
             <div className="relative flex min-h-[300px] min-w-0 flex-col border-b border-slate-800 bg-slate-950/70 p-3 sm:min-h-[400px] sm:p-4 md:p-5 lg:min-h-[460px] lg:border-r lg:border-b-0">
-                {/* GLOW */}
+                {/* ==================================================
+                    GLOW
+                ================================================== */}
                 <div className="pointer-events-none absolute top-1/2 left-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px] sm:h-64 sm:w-64 sm:blur-[100px]" />
 
                 {/* ==================================================
@@ -218,9 +228,9 @@ export default function ProjectGallery({
                     onTouchEnd={handleTouchEnd}
                 >
                     {/* ==================================================
-                        CONTENEDOR
+                        MODAL CONTENT
                     ================================================== */}
-                    <div className="relative flex min-h-[140vh] w-full items-start justify-center px-4 py-24 sm:min-h-[100dvh] sm:items-center sm:px-16 sm:py-16">
+                    <div className="relative flex min-h-full w-full items-start justify-center px-4 pt-20 pb-20 sm:min-h-[100dvh] sm:items-center sm:px-16 sm:py-16">
                         {/* ==================================================
                             CLOSE
                         ================================================== */}
@@ -248,7 +258,7 @@ export default function ProjectGallery({
                                 src={images[activeImage]}
                                 alt={`${project.title} - captura ${activeImage + 1}`}
                                 draggable={false}
-                                className="block h-auto max-h-none max-w-full rounded-lg object-contain shadow-2xl select-none sm:max-h-[88vh] sm:max-w-[85vw]"
+                                className="block h-auto w-auto max-w-full rounded-lg object-contain shadow-2xl select-none sm:max-h-[88vh] sm:max-w-[85vw]"
                             />
                         </div>
 
@@ -279,13 +289,6 @@ export default function ProjectGallery({
                                 <ChevronRight size={25} />
                             </button>
                         )}
-
-                        {/* ==================================================
-                            MOBILE HINT
-                        ================================================== */}
-                        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1.5 text-[10px] whitespace-nowrap text-slate-400 backdrop-blur sm:hidden">
-                            ← → cambiar imágenes
-                        </div>
                     </div>
                 </div>
             )}
