@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Code2, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 export default function ProjectGallery({
@@ -39,8 +40,6 @@ export default function ProjectGallery({
 
         document.addEventListener('keydown', handleKeyDown);
 
-        // Bloqueamos solamente el scroll de la página
-        // que queda detrás del modal.
         const previousOverflow = document.body.style.overflow;
 
         document.body.style.overflow = 'hidden';
@@ -73,6 +72,7 @@ export default function ProjectGallery({
         const touch = event.changedTouches[0];
 
         const deltaX = touch.clientX - touchStartX.current;
+
         const deltaY = touch.clientY - touchStartY.current;
 
         touchStartX.current = null;
@@ -82,19 +82,18 @@ export default function ProjectGallery({
         const absY = Math.abs(deltaY);
 
         // ==================================================
-        // MOVIMIENTO VERTICAL
+        // VERTICAL
         // ==================================================
-        // No hacemos absolutamente nada.
+        // No hacemos nada.
         //
-        // El navegador se encarga del scroll vertical
-        // del modal.
+        // El navegador maneja el scroll vertical.
         //
         if (absY > absX) {
             return;
         }
 
         // ==================================================
-        // MOVIMIENTO HORIZONTAL
+        // HORIZONTAL
         // ==================================================
         if (absX < 50) {
             return;
@@ -104,16 +103,103 @@ export default function ProjectGallery({
             return;
         }
 
-        // Swipe izquierda → siguiente
         if (deltaX < 0) {
+            // izquierda → siguiente
             onNext();
-        }
-
-        // Swipe derecha → anterior
-        else {
+        } else {
+            // derecha → anterior
             onPrevious();
         }
     };
+
+    // ==================================================
+    // LIGHTBOX
+    // ==================================================
+    const lightbox = isLightboxOpen && images.length > 0 && (
+        <div className="fixed inset-0 z-[99999] h-[100dvh] w-screen bg-black/95 backdrop-blur-sm">
+            {/* ==================================================
+                    HEADER FIJO
+                ================================================== */}
+            <div className="pointer-events-none fixed top-0 right-0 left-0 z-[100] flex items-center justify-center px-4 pt-4 sm:pt-6">
+                {/* COUNTER */}
+                <div className="pointer-events-auto rounded-lg border border-white/10 bg-slate-900/90 px-3 py-1.5 text-xs text-slate-300 shadow-xl backdrop-blur">
+                    {activeImage + 1} / {images.length}
+                </div>
+            </div>
+
+            {/* ==================================================
+                    CLOSE
+                ================================================== */}
+            <button
+                type="button"
+                onClick={() => setIsLightboxOpen(false)}
+                className="fixed top-4 right-4 z-[110] flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-slate-900/95 text-white shadow-2xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:top-6 sm:right-6 sm:h-10 sm:w-10"
+                aria-label="Cerrar imagen"
+            >
+                <X size={24} />
+            </button>
+
+            {/* ==================================================
+                    SCROLL AREA
+                ================================================== */}
+            <div
+                className="h-[100dvh] w-full touch-pan-y overflow-x-hidden overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]"
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+            >
+                {/* ==================================================
+                        IMAGE CONTAINER
+                    ================================================== */}
+                <div className="flex min-h-full w-full items-start justify-center px-4 pt-24 pb-24 sm:items-center sm:px-16 sm:py-20">
+                    <div className="relative flex w-full justify-center">
+                        <img
+                            src={images[activeImage]}
+                            alt={`${project.title} - captura ${activeImage + 1}`}
+                            draggable={false}
+                            className="block h-auto w-auto max-w-full rounded-lg object-contain shadow-2xl select-none sm:max-h-[88vh] sm:max-w-[85vw]"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* ==================================================
+                    PREVIOUS
+                ================================================== */}
+            {images.length > 1 && (
+                <button
+                    type="button"
+                    onClick={onPrevious}
+                    className="fixed top-1/2 left-2 z-[110] flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-slate-900/95 text-white shadow-2xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:left-6 sm:h-12 sm:w-12"
+                    aria-label="Imagen anterior"
+                >
+                    <ChevronLeft size={25} />
+                </button>
+            )}
+
+            {/* ==================================================
+                    NEXT
+                ================================================== */}
+            {images.length > 1 && (
+                <button
+                    type="button"
+                    onClick={onNext}
+                    className="fixed top-1/2 right-2 z-[110] flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-slate-900/95 text-white shadow-2xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:right-6 sm:h-12 sm:w-12"
+                    aria-label="Imagen siguiente"
+                >
+                    <ChevronRight size={25} />
+                </button>
+            )}
+
+            {/* ==================================================
+                    MOBILE HINT
+                ================================================== */}
+            {images.length > 1 && (
+                <div className="pointer-events-none fixed bottom-4 left-1/2 z-[110] -translate-x-1/2 rounded-full bg-black/60 px-3 py-1.5 text-[10px] whitespace-nowrap text-slate-400 backdrop-blur sm:hidden">
+                    ← → cambiar imágenes
+                </div>
+            )}
+        </div>
+    );
 
     return (
         <>
@@ -121,9 +207,7 @@ export default function ProjectGallery({
                 GALLERY
             ================================================== */}
             <div className="relative flex min-h-[300px] min-w-0 flex-col border-b border-slate-800 bg-slate-950/70 p-3 sm:min-h-[400px] sm:p-4 md:p-5 lg:min-h-[460px] lg:border-r lg:border-b-0">
-                {/* ==================================================
-                    GLOW
-                ================================================== */}
+                {/* GLOW */}
                 <div className="pointer-events-none absolute top-1/2 left-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px] sm:h-64 sm:w-64 sm:blur-[100px]" />
 
                 {/* ==================================================
@@ -219,79 +303,9 @@ export default function ProjectGallery({
             </div>
 
             {/* ==================================================
-                LIGHTBOX
+                PORTAL
             ================================================== */}
-            {isLightboxOpen && images.length > 0 && (
-                <div
-                    className="fixed inset-0 z-[9999] h-[100dvh] w-full touch-pan-y overflow-x-hidden overflow-y-auto overscroll-contain bg-black/95 backdrop-blur-sm"
-                    onTouchStart={handleTouchStart}
-                    onTouchEnd={handleTouchEnd}
-                >
-                    {/* ==================================================
-                        MODAL CONTENT
-                    ================================================== */}
-                    <div className="relative flex min-h-full w-full items-start justify-center px-4 pt-20 pb-20 sm:min-h-[100dvh] sm:items-center sm:px-16 sm:py-16">
-                        {/* ==================================================
-                            CLOSE
-                        ================================================== */}
-                        <button
-                            type="button"
-                            onClick={() => setIsLightboxOpen(false)}
-                            className="fixed top-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-white shadow-xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:top-6 sm:right-6 sm:h-10 sm:w-10"
-                            aria-label="Cerrar imagen"
-                        >
-                            <X size={24} />
-                        </button>
-
-                        {/* ==================================================
-                            COUNTER
-                        ================================================== */}
-                        <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-white/10 bg-slate-900/90 px-3 py-1.5 text-xs text-slate-300 backdrop-blur sm:top-6">
-                            {activeImage + 1} / {images.length}
-                        </div>
-
-                        {/* ==================================================
-                            IMAGE
-                        ================================================== */}
-                        <div className="flex w-full items-center justify-center">
-                            <img
-                                src={images[activeImage]}
-                                alt={`${project.title} - captura ${activeImage + 1}`}
-                                draggable={false}
-                                className="block h-auto w-auto max-w-full rounded-lg object-contain shadow-2xl select-none sm:max-h-[88vh] sm:max-w-[85vw]"
-                            />
-                        </div>
-
-                        {/* ==================================================
-                            PREVIOUS
-                        ================================================== */}
-                        {images.length > 1 && (
-                            <button
-                                type="button"
-                                onClick={onPrevious}
-                                className="fixed top-1/2 left-2 z-50 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-white shadow-xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:left-6 sm:h-12 sm:w-12"
-                                aria-label="Imagen anterior"
-                            >
-                                <ChevronLeft size={25} />
-                            </button>
-                        )}
-
-                        {/* ==================================================
-                            NEXT
-                        ================================================== */}
-                        {images.length > 1 && (
-                            <button
-                                type="button"
-                                onClick={onNext}
-                                className="fixed top-1/2 right-2 z-50 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-white shadow-xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:right-6 sm:h-12 sm:w-12"
-                                aria-label="Imagen siguiente"
-                            >
-                                <ChevronRight size={25} />
-                            </button>
-                        )}
-                    </div>
-                </div>
-            )}
+            {typeof document !== 'undefined' && createPortal(lightbox, document.body)}
         </>
     );
 }
