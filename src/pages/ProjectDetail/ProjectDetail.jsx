@@ -69,7 +69,7 @@ export default function ProjectDetail() {
                     </div>
 
                     {/* PROJECT */}
-                    <div className="grid w-full min-w-0 overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-2xl shadow-black/40 backdrop-blur-xl sm:rounded-3xl lg:grid-cols-[0.82fr_1.18fr]">
+                    <div className="grid w-full min-w-0 grid-cols-1 overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-2xl shadow-black/40 backdrop-blur-xl sm:rounded-3xl lg:grid-cols-[0.82fr_1.18fr]">
                         {/* GALLERY */}
                         <ProjectGallery
                             project={project}
