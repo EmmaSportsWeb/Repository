@@ -192,84 +192,85 @@ export default function ProjectGallery({
             {/* ==================================================
                 LIGHTBOX
             ================================================== */}
+            {/* ==================================================
+    LIGHTBOX
+================================================== */}
             {isLightboxOpen && images.length > 0 && (
                 <div
-                    className="fixed inset-0 z-[9999] flex h-[100dvh] w-full items-center justify-center overflow-hidden bg-black/95 p-3 backdrop-blur-sm sm:p-8"
-                    onMouseDown={(event) => {
-                        if (event.target === event.currentTarget) {
-                            setIsLightboxOpen(false);
-                        }
-                    }}
+                    className="fixed inset-0 z-[9999] h-[100dvh] w-full overflow-x-hidden overflow-y-auto overscroll-contain bg-black/95 backdrop-blur-sm"
                     onTouchStart={handleTouchStart}
                     onTouchEnd={handleTouchEnd}
                 >
-                    {/* =========================
-                        CLOSE
-                    ========================== */}
-                    <button
-                        type="button"
-                        onClick={() => setIsLightboxOpen(false)}
-                        className="absolute top-4 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-white shadow-xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:top-6 sm:right-6 sm:h-10 sm:w-10"
-                        aria-label="Cerrar imagen"
-                    >
-                        <X size={24} />
-                    </button>
-
-                    {/* =========================
-                        COUNTER
-                    ========================== */}
-                    <div className="absolute top-4 left-1/2 z-30 -translate-x-1/2 rounded-lg border border-white/10 bg-slate-900/90 px-3 py-1.5 text-xs text-slate-300 backdrop-blur sm:top-6">
-                        {activeImage + 1} / {images.length}
-                    </div>
-
-                    {/* =========================
-                        IMAGE CONTAINER
-                    ========================== */}
-                    <div className="flex h-full w-full items-center justify-center px-10 py-16 sm:px-16 sm:py-10">
-                        <img
-                            src={images[activeImage]}
-                            alt={`${project.title} - captura ${activeImage + 1}`}
-                            draggable={false}
-                            className="block max-h-[calc(100dvh-120px)] max-w-full rounded-lg object-contain shadow-2xl select-none sm:max-h-[88vh] sm:max-w-[85vw]"
-                        />
-                    </div>
-
-                    {/* =========================
-                        PREVIOUS
-                    ========================== */}
-                    {images.length > 1 && (
+                    {/* CONTENEDOR DEL LIGHTBOX */}
+                    <div className="relative flex min-h-[100dvh] w-full items-center justify-center px-4 py-20 sm:px-16 sm:py-16">
+                        {/* =========================
+                CLOSE
+            ========================== */}
                         <button
                             type="button"
-                            onClick={onPrevious}
-                            className="absolute top-1/2 left-2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-white shadow-xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:left-6 sm:h-12 sm:w-12"
-                            aria-label="Imagen anterior"
+                            onClick={() => setIsLightboxOpen(false)}
+                            className="fixed top-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-white shadow-xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:top-6 sm:right-6 sm:h-10 sm:w-10"
+                            aria-label="Cerrar imagen"
                         >
-                            <ChevronLeft size={25} />
+                            <X size={24} />
                         </button>
-                    )}
 
-                    {/* =========================
-                        NEXT
-                    ========================== */}
-                    {images.length > 1 && (
-                        <button
-                            type="button"
-                            onClick={onNext}
-                            className="absolute top-1/2 right-2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-white shadow-xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:right-6 sm:h-12 sm:w-12"
-                            aria-label="Imagen siguiente"
-                        >
-                            <ChevronRight size={25} />
-                        </button>
-                    )}
-
-                    {/* =========================
-                        MOBILE HINT
-                    ========================== */}
-                    {images.length > 1 && (
-                        <div className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 rounded-full bg-black/40 px-3 py-1.5 text-[10px] whitespace-nowrap text-slate-500 backdrop-blur">
-                            Desliza para cambiar · Toca X para cerrar
+                        {/* =========================
+                COUNTER
+            ========================== */}
+                        <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-white/10 bg-slate-900/90 px-3 py-1.5 text-xs text-slate-300 backdrop-blur sm:top-6">
+                            {activeImage + 1} / {images.length}
                         </div>
-                    )}
+
+                        {/* =========================
+                IMAGE
+            ========================== */}
+                        <div className="flex w-full items-center justify-center">
+                            <img
+                                src={images[activeImage]}
+                                alt={`${project.title} - captura ${activeImage + 1}`}
+                                draggable={false}
+                                className="block max-h-none max-w-full rounded-lg object-contain shadow-2xl select-none sm:max-h-[88vh] sm:max-w-[85vw]"
+                            />
+                        </div>
+
+                        {/* =========================
+                PREVIOUS
+            ========================== */}
+                        {images.length > 1 && (
+                            <button
+                                type="button"
+                                onClick={onPrevious}
+                                className="fixed top-1/2 left-2 z-50 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-white shadow-xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:left-6 sm:h-12 sm:w-12"
+                                aria-label="Imagen anterior"
+                            >
+                                <ChevronLeft size={25} />
+                            </button>
+                        )}
+
+                        {/* =========================
+                NEXT
+            ========================== */}
+                        {images.length > 1 && (
+                            <button
+                                type="button"
+                                onClick={onNext}
+                                className="fixed top-1/2 right-2 z-50 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-white shadow-xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:right-6 sm:h-12 sm:w-12"
+                                aria-label="Imagen siguiente"
+                            >
+                                <ChevronRight size={25} />
+                            </button>
+                        )}
+
+                        {/* =========================
+                MOBILE HINT
+            ========================== */}
+                        {images.length > 1 && (
+                            <div className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1.5 text-[10px] whitespace-nowrap text-slate-500 backdrop-blur">
+                                Desliza ← → para cambiar
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
         </>
