@@ -228,6 +228,116 @@ const projects = [
         architectureDescription:
             'Frontend desarrollado con React y Tailwind CSS, utilizando componentes reutilizables y una interfaz administrativa orientada a la gestión de información escolar. La aplicación utiliza Vite como herramienta de desarrollo y Lucide React para la iconografía.',
     },
+    {
+        id: 3,
+        slug: 'sistema-ligas-futbol',
+
+        title: 'Sistema de Ligas de Fútbol',
+
+        shortTitle: 'Ligas de Fútbol',
+
+        type: 'Full Stack',
+
+        category: 'Web',
+
+        featured: true,
+
+        status: 'Proyecto en desarrollo',
+
+        description: 'Plataforma web para la gestión completa de ligas de fútbol.',
+
+        fullDescription:
+            'Sistema web desarrollado para administrar ligas de fútbol amateur y profesional. Permite crear ligas, gestionar equipos, generar fixtures automáticos, registrar resultados, visualizar tablas de posiciones y generar reportes en PDF. La interfaz es limpia, responsive y orientada a organizadores y delegados de liga.',
+
+        technologies: [
+            'React',
+            'JavaScript',
+            'Tailwind CSS',
+            'Laravel',
+            'PHP',
+            'MySQL',
+            'REST API',
+            'PDF',
+            'Git',
+            'GitHub',
+        ],
+
+        architecture: [
+            {
+                icon: Code2,
+                title: 'Frontend',
+                value: 'React',
+                color: 'blue',
+            },
+            {
+                icon: Server,
+                title: 'Backend',
+                value: 'Laravel',
+                color: 'purple',
+            },
+            {
+                icon: Database,
+                title: 'Database',
+                value: 'MySQL',
+                color: 'cyan',
+            },
+        ],
+
+        features: [
+            {
+                icon: Users,
+                title: 'Gestión de ligas y equipos',
+                description: 'Creación de ligas, registro de equipos y delegados con sus datos.',
+            },
+            {
+                icon: CalendarDays,
+                title: 'Generación de fixture',
+                description:
+                    'Generación automática de partidos por fecha, con validación de equipos repetidos.',
+            },
+            {
+                icon: LayoutDashboard,
+                title: 'Tablas de posiciones',
+                description: 'Tabla actualizada con PJ, PG, PE, PP, GF, GC, DG y puntos.',
+            },
+            {
+                icon: BookOpen,
+                title: 'Registro de resultados',
+                description:
+                    'Carga de marcadores por partido y actualización automática de estadísticas.',
+            },
+            {
+                icon: Newspaper,
+                title: 'Reportes y PDF',
+                description: 'Exportación de fixture, tabla de posiciones y programación en PDF.',
+            },
+            {
+                icon: ShieldCheck,
+                title: 'Validaciones',
+                description:
+                    'Control para evitar fixtures duplicados y alertas al generar nuevo fixture.',
+            },
+            {
+                icon: Smartphone,
+                title: 'Diseño responsive',
+                description: 'Interfaz adaptable para gestión desde escritorio y móvil.',
+            },
+        ],
+
+        images: Array.from(
+            { length: 15 },
+            (_, index) => `/images/projects/ligas-futbol/img${index + 1}.webp`
+        ),
+
+        mobileImages: [],
+
+        github: null,
+
+        demo: null,
+
+        architectureDescription:
+            'Frontend desarrollado con React y Tailwind CSS, conectado a una API REST en Laravel. Base de datos MySQL para almacenar ligas, equipos, partidos y resultados. Incluye generación de PDF para reportes de liga.',
+    },
 ];
 
 export default projects;
