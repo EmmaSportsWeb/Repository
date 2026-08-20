@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import BackgroundEffects from '../../components/BackgroundEffects';
@@ -20,18 +20,21 @@ export default function ProjectDetail() {
     const [view, setView] = useState('web');
 
     // ==================================================
-    // RESET AL CAMBIAR DE PROYECTO
+    // CAMBIO DE PROYECTO
     // ==================================================
-    useEffect(() => {
+    useLayoutEffect(() => {
+        // Reset de la galería
         setActiveImage(0);
         setView('web');
 
-        // Volver al inicio del proyecto/página
-        window.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: 'instant',
-        });
+        // IMPORTANTE:
+        // Se ejecuta antes de que el navegador pinte
+        // la nueva posición de la página.
+        window.scrollTo(0, 0);
+
+        // Refuerzo para navegadores móviles
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
     }, [slug]);
 
     if (!project) {
@@ -41,7 +44,7 @@ export default function ProjectDetail() {
     const images = view === 'web' ? project.images : project.mobileImages;
 
     // ==================================================
-    // NEXT IMAGE
+    // NEXT
     // ==================================================
     const nextImage = () => {
         if (!images.length) return;
@@ -50,7 +53,7 @@ export default function ProjectDetail() {
     };
 
     // ==================================================
-    // PREVIOUS IMAGE
+    // PREVIOUS
     // ==================================================
     const previousImage = () => {
         if (!images.length) return;

@@ -1,5 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+
 import { createPortal } from 'react-dom';
+
 import { Code2, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 export default function ProjectGallery({
@@ -10,10 +12,61 @@ export default function ProjectGallery({
     onPrevious,
     onNext,
 }) {
-    const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+    // ==================================================
+    // IMAGE DIMENSIONS
+    // ==================================================
+    const [imageOrientation, setImageOrientation] = useState('landscape');
+
+    // ==================================================
+    // REFS
+    // ==================================================
+    const lightboxScrollRef = useRef(null);
 
     const touchStartX = useRef(null);
     const touchStartY = useRef(null);
+
+    // ==================================================
+    // CURRENT IMAGE
+    // ==================================================
+    const currentImage = images[activeImage];
+
+    // ==================================================
+    // LOAD IMAGE DIMENSIONS
+    // ==================================================
+    useEffect(() => {
+        if (!currentImage) return;
+
+        const image = new Image();
+
+        image.onload = () => {
+            if (image.naturalHeight > image.naturalWidth) {
+                setImageOrientation('portrait');
+            } else {
+                setImageOrientation('landscape');
+            }
+        };
+
+        image.src = currentImage;
+    }, [currentImage]);
+
+    // ==================================================
+    // RESET LIGHTBOX SCROLL WHEN IMAGE CHANGES
+    // ==================================================
+    useLayoutEffect(() => {
+        if (!isLightboxOpen) return;
+
+        const scrollContainer = lightboxScrollRef.current;
+
+        if (!scrollContainer) return;
+
+        scrollContainer.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'instant',
+        });
+    }, [activeImage, isLightboxOpen]);
 
     // ==================================================
     // KEYBOARD + BODY SCROLL
@@ -52,6 +105,23 @@ export default function ProjectGallery({
     }, [isLightboxOpen, images.length, onPrevious, onNext]);
 
     // ==================================================
+    // OPEN LIGHTBOX
+    // ==================================================
+    const openLightbox = () => {
+        setIsLightboxOpen(true);
+    };
+
+    // ==================================================
+    // CLOSE LIGHTBOX
+    // ==================================================
+    const closeLightbox = () => {
+        setIsLightboxOpen(false);
+
+        touchStartX.current = null;
+        touchStartY.current = null;
+    };
+
+    // ==================================================
     // TOUCH START
     // ==================================================
     const handleTouchStart = (event) => {
@@ -84,11 +154,12 @@ export default function ProjectGallery({
         // ==================================================
         // VERTICAL
         // ==================================================
-        // No hacemos nada.
+        // IMPORTANTE:
         //
-        // El navegador maneja el scroll vertical.
+        // Si el movimiento es vertical no hacemos nada.
+        // El navegador se encarga del scroll.
         //
-        if (absY > absX) {
+        if (absY >= absX) {
             return;
         }
 
@@ -104,10 +175,10 @@ export default function ProjectGallery({
         }
 
         if (deltaX < 0) {
-            // izquierda → siguiente
+            // Swipe izquierda
             onNext();
         } else {
-            // derecha → anterior
+            // Swipe derecha
             onPrevious();
         }
     };
@@ -116,13 +187,12 @@ export default function ProjectGallery({
     // LIGHTBOX
     // ==================================================
     const lightbox = isLightboxOpen && images.length > 0 && (
-        <div className="fixed inset-0 z-[99999] h-[100dvh] w-screen bg-black/95 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[99999] h-[100dvh] w-screen overflow-hidden bg-black/95 backdrop-blur-sm">
             {/* ==================================================
-                    HEADER FIJO
+                    COUNTER
                 ================================================== */}
-            <div className="pointer-events-none fixed top-0 right-0 left-0 z-[100] flex items-center justify-center px-4 pt-4 sm:pt-6">
-                {/* COUNTER */}
-                <div className="pointer-events-auto rounded-lg border border-white/10 bg-slate-900/90 px-3 py-1.5 text-xs text-slate-300 shadow-xl backdrop-blur">
+            <div className="pointer-events-none fixed top-0 right-0 left-0 z-[100] flex justify-center px-4 pt-3 sm:pt-6">
+                <div className="rounded-lg border border-white/10 bg-slate-900/90 px-3 py-1.5 text-xs text-slate-300 shadow-xl backdrop-blur">
                     {activeImage + 1} / {images.length}
                 </div>
             </div>
@@ -132,17 +202,18 @@ export default function ProjectGallery({
                 ================================================== */}
             <button
                 type="button"
-                onClick={() => setIsLightboxOpen(false)}
-                className="fixed top-4 right-4 z-[110] flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-slate-900/95 text-white shadow-2xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:top-6 sm:right-6 sm:h-10 sm:w-10"
+                onClick={closeLightbox}
+                className="fixed top-3 right-3 z-[110] flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-slate-900/95 text-white shadow-2xl backdrop-blur transition hover:bg-slate-800 active:scale-90 sm:top-6 sm:right-6 sm:h-10 sm:w-10"
                 aria-label="Cerrar imagen"
             >
-                <X size={24} />
+                <X size={23} />
             </button>
 
             {/* ==================================================
                     SCROLL AREA
                 ================================================== */}
             <div
+                ref={lightboxScrollRef}
                 className="h-[100dvh] w-full touch-pan-y overflow-x-hidden overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]"
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
@@ -150,15 +221,27 @@ export default function ProjectGallery({
                 {/* ==================================================
                         IMAGE CONTAINER
                     ================================================== */}
-                <div className="flex min-h-full w-full items-start justify-center px-4 pt-24 pb-24 sm:items-center sm:px-16 sm:py-20">
-                    <div className="relative flex w-full justify-center">
-                        <img
-                            src={images[activeImage]}
-                            alt={`${project.title} - captura ${activeImage + 1}`}
-                            draggable={false}
-                            className="block h-auto w-auto max-w-full rounded-lg object-contain shadow-2xl select-none sm:max-h-[88vh] sm:max-w-[85vw]"
-                        />
-                    </div>
+                <div
+                    className={`flex w-full justify-center px-3 sm:px-16 ${
+                        imageOrientation === 'landscape'
+                            ? `min-h-[100dvh] items-center py-20`
+                            : `items-start py-20 pb-24`
+                    } `}
+                >
+                    {/* ==================================================
+                            IMAGE
+                        ================================================== */}
+                    <img
+                        key={currentImage}
+                        src={currentImage}
+                        alt={`${project.title} - captura ${activeImage + 1}`}
+                        draggable={false}
+                        className={`block h-auto w-auto rounded-lg object-contain shadow-2xl select-none ${
+                            imageOrientation === 'landscape'
+                                ? `max-h-[calc(100dvh-10rem)] max-w-[calc(100vw-6rem)] `
+                                : `max-w-[calc(100vw-1.5rem)] `
+                        } sm:max-h-[88vh] sm:max-w-[85vw]`}
+                    />
                 </div>
             </div>
 
@@ -194,7 +277,7 @@ export default function ProjectGallery({
                     MOBILE HINT
                 ================================================== */}
             {images.length > 1 && (
-                <div className="pointer-events-none fixed bottom-4 left-1/2 z-[110] -translate-x-1/2 rounded-full bg-black/60 px-3 py-1.5 text-[10px] whitespace-nowrap text-slate-400 backdrop-blur sm:hidden">
+                <div className="pointer-events-none fixed bottom-3 left-1/2 z-[110] -translate-x-1/2 rounded-full bg-black/60 px-3 py-1.5 text-[10px] whitespace-nowrap text-slate-400 backdrop-blur sm:hidden">
                     ← → cambiar imágenes
                 </div>
             )}
@@ -207,7 +290,9 @@ export default function ProjectGallery({
                 GALLERY
             ================================================== */}
             <div className="relative flex min-h-[300px] min-w-0 flex-col border-b border-slate-800 bg-slate-950/70 p-3 sm:min-h-[400px] sm:p-4 md:p-5 lg:min-h-[460px] lg:border-r lg:border-b-0">
-                {/* GLOW */}
+                {/* ==================================================
+                    GLOW
+                ================================================== */}
                 <div className="pointer-events-none absolute top-1/2 left-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px] sm:h-64 sm:w-64 sm:blur-[100px]" />
 
                 {/* ==================================================
@@ -217,17 +302,19 @@ export default function ProjectGallery({
                     {images.length > 0 ? (
                         <button
                             type="button"
-                            onClick={() => setIsLightboxOpen(true)}
+                            onClick={openLightbox}
                             className="group relative flex h-full w-full cursor-zoom-in items-center justify-center"
                             aria-label="Ampliar imagen"
                         >
                             <img
-                                src={images[activeImage]}
+                                src={currentImage}
                                 alt={`${project.title} - captura ${activeImage + 1}`}
                                 className="pointer-events-none max-h-[260px] max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-[1.02] sm:max-h-[330px] sm:max-w-[88%]"
                             />
 
-                            {/* ZOOM HINT */}
+                            {/* ==================================================
+                                ZOOM HINT
+                            ================================================== */}
                             <div className="pointer-events-none absolute bottom-3 left-1/2 hidden -translate-x-1/2 rounded-lg border border-white/10 bg-slate-950/80 px-3 py-1.5 text-xs text-slate-300 shadow-xl backdrop-blur sm:block">
                                 Click para ampliar
                             </div>
