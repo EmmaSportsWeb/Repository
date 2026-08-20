@@ -19,9 +19,19 @@ export default function ProjectDetail() {
     const [activeImage, setActiveImage] = useState(0);
     const [view, setView] = useState('web');
 
+    // ==================================================
+    // RESET AL CAMBIAR DE PROYECTO
+    // ==================================================
     useEffect(() => {
         setActiveImage(0);
         setView('web');
+
+        // Volver al inicio del proyecto/página
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'instant',
+        });
     }, [slug]);
 
     if (!project) {
@@ -30,18 +40,27 @@ export default function ProjectDetail() {
 
     const images = view === 'web' ? project.images : project.mobileImages;
 
+    // ==================================================
+    // NEXT IMAGE
+    // ==================================================
     const nextImage = () => {
         if (!images.length) return;
 
         setActiveImage((current) => (current >= images.length - 1 ? 0 : current + 1));
     };
 
+    // ==================================================
+    // PREVIOUS IMAGE
+    // ==================================================
     const previousImage = () => {
         if (!images.length) return;
 
         setActiveImage((current) => (current <= 0 ? images.length - 1 : current - 1));
     };
 
+    // ==================================================
+    // CHANGE VIEW
+    // ==================================================
     const changeView = (newView) => {
         if (newView === 'mobile' && project.mobileImages.length === 0) {
             return;
